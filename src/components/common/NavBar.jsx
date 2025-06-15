@@ -1,5 +1,5 @@
 
-function Edit(){
+function NavBar(){
 
     return(
         <>
@@ -7,4 +7,4 @@ function Edit(){
     )
 }
 
-export default Edit;
+export default NavBar;
