@@ -4,10 +4,14 @@ import FooterComp from "../common/FooterComp";
 
 function Home(){
     return (
-        <>
-            <NavBar/>
-            <FooterComp/>
-        </>
+        <div className="min-h-screen flex flex-col">
+            <NavBar />
+            <main className="flex-1">
+                {/* <Add />
+                <BookList /> */}
+            </main>
+            <FooterComp />
+        </div>
     )
 }
 
