@@ -1,7 +1,7 @@
 
-import Add from "./components/pages/Add";
-import BookList from "./components/pages/BookList";
-import Home from "./components/pages/Home";
+import Add from "./components/modal/Add";
+import BookList from "./components/main/BookList";
+import Home from "./components/main/Home";
 
 function App(){
 
