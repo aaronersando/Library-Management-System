@@ -1,6 +1,6 @@
 import { Book } from "lucide-react";
 
-function NavBar(){
+function NavBar({ onAddBookClick }){
 
     return(
         <>
@@ -11,7 +11,12 @@ function NavBar(){
                 </div>
                 <div className="flex flex-row space-x-2 sm:space-x-3 md:space-x-4 lg:space-x-6">
                     <h3 className="font-medium text-md text-md text-gray-500">Home</h3>
-                    <button className="bg-blue-600 hover:bg-blue-700 text-md text-white font-normal px-4 rounded-md py-1.5 -mt-1.5">Add Book</button>
+                    <button 
+                        onClick={onAddBookClick}
+                        className="bg-blue-600 hover:bg-blue-700 text-md text-white font-normal px-4 rounded-md py-1.5 -mt-1.5"
+                    >
+                        Add Book
+                    </button>
                 </div>
             </nav>
         </>

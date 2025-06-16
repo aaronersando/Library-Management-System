@@ -3,7 +3,7 @@ import { db } from "../../config/firebase";
 import { useEffect, useState } from "react";
 import Book from "../main/Book";
 
-function BookList({ searchTerm = "" }){
+function BookList({ searchTerm = "", refreshTrigger = 0 }){
     const [books, setBooks] = useState([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
@@ -30,7 +30,7 @@ function BookList({ searchTerm = "" }){
 
     useEffect(() => {
         listBooks();
-    }, []);
+    }, [refreshTrigger]); // Refresh when refreshTrigger changes
 
     // Filter books based on search term passed from Home
     const filteredBooks = books.filter(book =>
@@ -66,7 +66,7 @@ function BookList({ searchTerm = "" }){
                     </p>
                 </div>
             ) : (
-                <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 ">
+                <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
                     {filteredBooks.map((book) => (
                         <Book key={book.id} book={book} />
                     ))}
