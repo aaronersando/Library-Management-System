@@ -1,15 +1,18 @@
 import { Edit, Trash2 } from 'lucide-react';
 
-const Book = ({ book }) => {
+const Book = ({ book, onDelete }) => {
 
   const handleEdit = () => {
-    console.log("Edit book:", title);
+    console.log("Edit book:", book.title);
     // edit functionality 
   };
 
   const handleDelete = () => {
-    console.log("Delete book:", title);
-    // delete functionality 
+    console.log("Delete book:", book.title);
+    // Call the onDelete prop passed from parent
+    if (onDelete) {
+      onDelete(book);
+    }
   };
 
   return (

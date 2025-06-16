@@ -3,7 +3,7 @@ import { db } from "../../config/firebase";
 import { useEffect, useState } from "react";
 import Book from "../main/Book";
 
-function BookList({ searchTerm = "", refreshTrigger = 0 }){
+function BookList({ searchTerm = "", refreshTrigger = 0, onDeleteClick }){
     const [books, setBooks] = useState([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
@@ -68,7 +68,11 @@ function BookList({ searchTerm = "", refreshTrigger = 0 }){
             ) : (
                 <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
                     {filteredBooks.map((book) => (
-                        <Book key={book.id} book={book} />
+                        <Book 
+                            key={book.id} 
+                            book={book} 
+                            onDelete={onDeleteClick}
+                        />
                     ))}
                 </div>
             )}

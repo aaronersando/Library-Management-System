@@ -4,11 +4,14 @@ import FooterComp from "../common/FooterComp";
 import BookList from "./BookList";
 import Modal from "../common/Modal";
 import Add from "../modal/Add";
+import Delete from "../function/Delete";
 import { Plus, Search } from "lucide-react";
 
 function Home(){
     const [searchTerm, setSearchTerm] = useState("");
     const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+    const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+    const [bookToDelete, setBookToDelete] = useState(null);
     const [refreshBooks, setRefreshBooks] = useState(0);
 
     const handleAddBook = () => {
@@ -22,6 +25,21 @@ function Home(){
     const handleBookAdded = () => {
         // Refresh book list by incrementing refresh counter
         setRefreshBooks(prev => prev + 1);
+    };
+
+    const handleDeleteClick = (book) => {
+        setBookToDelete(book);
+        setIsDeleteModalOpen(true);
+    };
+
+    const handleCloseDeleteModal = () => {
+        setIsDeleteModalOpen(false);
+        setBookToDelete(null);
+    };
+
+    const handleBookDeleted = () => {
+        // Refresh book list after deletion
+        setRefreshBooks(prev => prev - 1);
     };
 
     return (
@@ -56,7 +74,11 @@ function Home(){
                 </div>
 
                 {/* Book List Component */}
-                <BookList searchTerm={searchTerm} refreshTrigger={refreshBooks} />
+                <BookList 
+                    searchTerm={searchTerm} 
+                    refreshTrigger={refreshBooks} 
+                    onDeleteClick={handleDeleteClick}
+                />
             </main>
             <FooterComp />
 
@@ -69,6 +91,19 @@ function Home(){
                 <Add 
                     onClose={handleCloseModal} 
                     onBookAdded={handleBookAdded}
+                />
+            </Modal>
+
+            {/* Delete Confirmation Modal */}
+            <Modal 
+                isOpen={isDeleteModalOpen} 
+                onClose={handleCloseDeleteModal}
+                title="Delete Book"
+            >
+                <Delete 
+                    book={bookToDelete}
+                    onClose={handleCloseDeleteModal} 
+                    onBookDeleted={handleBookDeleted}
                 />
             </Modal>
         </div>
