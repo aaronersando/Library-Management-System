@@ -3,6 +3,9 @@ function FooterComp(){
 
     return(
         <>
+            <footer>
+                
+            </footer>
         </>
     )
 }
