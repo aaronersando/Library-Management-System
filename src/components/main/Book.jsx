@@ -1,11 +1,13 @@
 import { Edit, Trash2 } from 'lucide-react';
 
-const Book = ({ book, onDelete, onBookClick }) => {
+const Book = ({ book, onDelete, onBookClick, onEditClick }) => {
 
   const handleEdit = (e) => {
     e.stopPropagation(); // Prevent card click
     console.log("Edit book:", book.title);
-    // edit functionality 
+    if (onEditClick) {
+      onEditClick(book);
+    }
   };
 
   const handleDelete = (e) => {

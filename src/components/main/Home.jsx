@@ -4,6 +4,7 @@ import FooterComp from "../common/FooterComp";
 import BookList from "./BookList";
 import Modal from "../common/Modal";
 import Add from "../modal/Add";
+import Edit from "../modal/Edit";
 import Delete from "../function/Delete";
 import BookDetails from "../modal/BookDetails";
 import { Plus, Search } from "lucide-react";
@@ -11,9 +12,11 @@ import { Plus, Search } from "lucide-react";
 function Home(){
     const [searchTerm, setSearchTerm] = useState("");
     const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+    const [isEditModalOpen, setIsEditModalOpen] = useState(false);
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
     const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false);
     const [bookToDelete, setBookToDelete] = useState(null);
+    const [bookToEdit, setBookToEdit] = useState(null);
     const [selectedBook, setSelectedBook] = useState(null);
     const [refreshBooks, setRefreshBooks] = useState(0);
 
@@ -61,16 +64,29 @@ function Home(){
     };
 
     const handleEditFromDetails = (book) => {
-        // Close details modal
+        // Close details modal and open edit modal
         setIsDetailsModalOpen(false);
         setSelectedBook(null);
-        
-        // TODO: Open edit modal
-        console.log("Edit book from details:", book.title);
+        setBookToEdit(book);
+        setIsEditModalOpen(true);
+    };
+
+    const handleEditClick = (book) => {
+        setBookToEdit(book);
+        setIsEditModalOpen(true);
+    };
+
+    const handleCloseEditModal = () => {
+        setIsEditModalOpen(false);
+        setBookToEdit(null);
+    };
+
+    const handleBookUpdated = () => {
+        // Refresh book list after update
+        setRefreshBooks(prev => prev + 1);
     };
 
     const handleDeleteFromDetails = (book) => {
-        // Don't close details modal yet, just open delete modal
         setBookToDelete(book);
         setIsDeleteModalOpen(true);
     };
@@ -112,6 +128,7 @@ function Home(){
                     refreshTrigger={refreshBooks} 
                     onDeleteClick={handleDeleteClick}
                     onBookClick={handleBookClick}
+                    onEditClick={handleEditClick}
                 />
             </main>
             <FooterComp />
@@ -125,6 +142,19 @@ function Home(){
                 <Add 
                     onClose={handleCloseModal} 
                     onBookAdded={handleBookAdded}
+                />
+            </Modal>
+
+            <Modal 
+                isOpen={isEditModalOpen} 
+                onClose={handleCloseEditModal}
+                title="Edit Book"
+                zIndex={60}
+            >
+                <Edit 
+                    book={bookToEdit}
+                    onClose={handleCloseEditModal} 
+                    onBookUpdated={handleBookUpdated}
                 />
             </Modal>
 
