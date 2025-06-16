@@ -5,13 +5,16 @@ import BookList from "./BookList";
 import Modal from "../common/Modal";
 import Add from "../modal/Add";
 import Delete from "../function/Delete";
+import BookDetails from "../modal/BookDetails";
 import { Plus, Search } from "lucide-react";
 
 function Home(){
     const [searchTerm, setSearchTerm] = useState("");
     const [isAddModalOpen, setIsAddModalOpen] = useState(false);
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+    const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false);
     const [bookToDelete, setBookToDelete] = useState(null);
+    const [selectedBook, setSelectedBook] = useState(null);
     const [refreshBooks, setRefreshBooks] = useState(0);
 
     const handleAddBook = () => {
@@ -39,7 +42,37 @@ function Home(){
 
     const handleBookDeleted = () => {
         // Refresh book list after deletion
-        setRefreshBooks(prev => prev - 1);
+        setRefreshBooks(prev => prev + 1);
+        // Also close the details modal if it's open
+        if (isDetailsModalOpen) {
+            setIsDetailsModalOpen(false);
+            setSelectedBook(null);
+        }
+    };
+
+    const handleBookClick = (book) => {
+        setSelectedBook(book);
+        setIsDetailsModalOpen(true);
+    };
+
+    const handleCloseDetailsModal = () => {
+        setIsDetailsModalOpen(false);
+        setSelectedBook(null);
+    };
+
+    const handleEditFromDetails = (book) => {
+        // Close details modal
+        setIsDetailsModalOpen(false);
+        setSelectedBook(null);
+        
+        // TODO: Open edit modal
+        console.log("Edit book from details:", book.title);
+    };
+
+    const handleDeleteFromDetails = (book) => {
+        // Don't close details modal yet, just open delete modal
+        setBookToDelete(book);
+        setIsDeleteModalOpen(true);
     };
 
     return (
@@ -78,15 +111,16 @@ function Home(){
                     searchTerm={searchTerm} 
                     refreshTrigger={refreshBooks} 
                     onDeleteClick={handleDeleteClick}
+                    onBookClick={handleBookClick}
                 />
             </main>
             <FooterComp />
 
-            {/* Add Book Modal */}
             <Modal 
                 isOpen={isAddModalOpen} 
                 onClose={handleCloseModal}
                 title="Add New Book"
+                zIndex={50}
             >
                 <Add 
                     onClose={handleCloseModal} 
@@ -94,11 +128,26 @@ function Home(){
                 />
             </Modal>
 
-            {/* Delete Confirmation Modal */}
+            <Modal 
+                isOpen={isDetailsModalOpen} 
+                onClose={handleCloseDetailsModal}
+                title="Book Details"
+                zIndex={50}
+            >
+                <BookDetails 
+                    book={selectedBook}
+                    onClose={handleCloseDetailsModal} 
+                    onEdit={handleEditFromDetails}
+                    onBookDeleted={handleBookDeleted}
+                    onDeleteClick={handleDeleteFromDetails}
+                />
+            </Modal>
+
             <Modal 
                 isOpen={isDeleteModalOpen} 
                 onClose={handleCloseDeleteModal}
                 title="Delete Book"
+                zIndex={60}
             >
                 <Delete 
                     book={bookToDelete}

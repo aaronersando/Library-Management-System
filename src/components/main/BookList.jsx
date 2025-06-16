@@ -3,7 +3,7 @@ import { db } from "../../config/firebase";
 import { useEffect, useState } from "react";
 import Book from "../main/Book";
 
-function BookList({ searchTerm = "", refreshTrigger = 0, onDeleteClick }){
+function BookList({ searchTerm = "", refreshTrigger = 0, onDeleteClick, onBookClick }){
     const [books, setBooks] = useState([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
@@ -72,6 +72,7 @@ function BookList({ searchTerm = "", refreshTrigger = 0, onDeleteClick }){
                             key={book.id} 
                             book={book} 
                             onDelete={onDeleteClick}
+                            onBookClick={onBookClick}
                         />
                     ))}
                 </div>

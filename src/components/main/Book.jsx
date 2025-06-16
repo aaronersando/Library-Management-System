@@ -1,22 +1,32 @@
 import { Edit, Trash2 } from 'lucide-react';
 
-const Book = ({ book, onDelete }) => {
+const Book = ({ book, onDelete, onBookClick }) => {
 
-  const handleEdit = () => {
+  const handleEdit = (e) => {
+    e.stopPropagation(); // Prevent card click
     console.log("Edit book:", book.title);
     // edit functionality 
   };
 
-  const handleDelete = () => {
+  const handleDelete = (e) => {
+    e.stopPropagation(); // Prevent card click
     console.log("Delete book:", book.title);
-    // Call the onDelete prop passed from parent
     if (onDelete) {
       onDelete(book);
     }
   };
 
+  const handleCardClick = () => {
+    if (onBookClick) {
+      onBookClick(book);
+    }
+  };
+
   return (
-    <div className="bg-white rounded-lg border border-gray-200 hover:shadow-md transition-shadow overflow-hidden">
+    <div 
+      className="bg-white rounded-lg border border-gray-200 hover:shadow-md transition-shadow overflow-hidden cursor-pointer"
+      onClick={handleCardClick}
+    >
       {/* Book Image */}
       <div className="w-full">
         <img 
