@@ -40,7 +40,7 @@ function BookList({ searchTerm = "", refreshTrigger = 0, onDeleteClick, onBookCl
 
     if (loading){
         return(
-            <div className="px-5 sm:px-20 md:px-30 lg:px-45 py-8 text-center">
+            <div className="w-full px-4 sm:px-6 md:px-10 lg:px-20 py-8 text-center">
                 <p>Loading books...</p>
             </div>
         );
@@ -48,8 +48,8 @@ function BookList({ searchTerm = "", refreshTrigger = 0, onDeleteClick, onBookCl
 
     if(error){
         return(
-            <div className="px-5 sm:px-20 md:px-30 lg:px-45 py-8 text-center">
-                <div className="bg-red-100 text-red-700 p-4 rounded-lg">{error}</div>
+            <div className="w-full px-4 sm:px-6 md:px-10 lg:px-20 py-8 text-center">
+                <div className="bg-red-100 text-red-700 p-3 sm:p-4 rounded-lg max-w-2xl mx-auto">{error}</div>
             </div>
         );
     }
@@ -57,8 +57,8 @@ function BookList({ searchTerm = "", refreshTrigger = 0, onDeleteClick, onBookCl
     return(
         <div className="px-5 sm:px-20 md:px-30 lg:px-45 pb-8">
             {filteredBooks.length === 0 ? (
-                <div className="text-center text-gray-500 py-12"> 
-                    <p>
+                <div className="text-center text-gray-500 py-8 sm:py-12 max-w-md mx-auto"> 
+                    <p className="text-sm sm:text-base">
                         {searchTerm ? 
                             `No books found matching "${searchTerm}"` : 
                             "No books found. Add some books to get started!"
@@ -66,7 +66,7 @@ function BookList({ searchTerm = "", refreshTrigger = 0, onDeleteClick, onBookCl
                     </p>
                 </div>
             ) : (
-                <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+                <div className="grid gap-3 sm:gap-4 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 ">
                     {filteredBooks.map((book) => (
                         <Book 
                             key={book.id} 

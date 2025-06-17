@@ -26,7 +26,7 @@ const Book = ({ book, onDelete, onBookClick, onEditClick }) => {
 
   return (
     <div 
-      className="bg-white rounded-lg border border-gray-200 hover:shadow-md transition-shadow overflow-hidden cursor-pointer"
+      className="bg-white rounded-lg border border-gray-200 hover:shadow-md transition-shadow overflow-hidden cursor-pointer flex flex-col h-full w-full"
       onClick={handleCardClick}
     >
       {/* Book Image */}
@@ -34,7 +34,7 @@ const Book = ({ book, onDelete, onBookClick, onEditClick }) => {
         <img 
           src={book.imageUrl ? book.imageUrl : "https://placehold.co/200x160"} 
           alt={book.title}
-          className="w-full h-40 object-cover"
+          className="w-full h-32 sm:h-40 object-cover"
           onError={(e) => {
             e.target.src = "https://placehold.co/200x160";
           }}
@@ -42,7 +42,7 @@ const Book = ({ book, onDelete, onBookClick, onEditClick }) => {
       </div>
 
       {/* Book Details*/}
-      <div className="p-4 space-y-1">
+      <div className="p-3 sm:p-4 space-y-1 flex-grow">
         <h3 className="font-bold text-sm text-gray-900 leading-tight line-clamp-2">
           {book.title}
         </h3>
@@ -63,7 +63,7 @@ const Book = ({ book, onDelete, onBookClick, onEditClick }) => {
         
         {/* Genre Tag and Actions Row */}
         <div className="flex items-center justify-between pt-2">
-          <span className="inline-block bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded">
+          <span className="inline-block bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded truncate max-w-[60%]">
             {book.genre}
           </span>
 
