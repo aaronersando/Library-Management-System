@@ -59,8 +59,8 @@ const DeleteBook = () => {
   if (loading) {
     return (
       <div className="min-h-screen flex flex-col">
-        <main className="flex-1 bg-gray-50 flex items-center justify-center">
-          <p className="text-lg text-gray-600">Loading book details...</p>
+        <main className="flex-1 bg-gray-50 flex items-center justify-center p-4">
+          <p className="text-base sm:text-lg text-gray-600 text-center">Loading book details...</p>
         </main>
       </div>
     );
@@ -69,14 +69,14 @@ const DeleteBook = () => {
   if (error || !book) {
     return (
       <div className="min-h-screen flex flex-col">
-        <main className="flex-1 bg-gray-50 flex items-center justify-center">
-          <div className="text-center">
-            <div className="bg-red-100 text-red-700 p-4 rounded-lg mb-4">
+        <main className="flex-1 bg-gray-50 flex items-center justify-center p-4">
+          <div className="text-center max-w-sm sm:max-w-md">
+            <div className="bg-red-100 text-red-700 p-3 sm:p-4 rounded-lg mb-3 sm:mb-4 text-sm sm:text-base">
               {error || "Book not found"}
             </div>
             <button
               onClick={handleBack}
-              className="text-blue-600 hover:text-blue-800 flex items-center space-x-2"
+              className="text-blue-600 hover:text-blue-800 flex items-center space-x-1 sm:space-x-2 mx-auto justify-center"
             >
               <ArrowLeft size={16} />
               <span>Back to Book List</span>
@@ -90,22 +90,22 @@ const DeleteBook = () => {
   return (
     <div className="min-h-screen flex flex-col">
       <main className="flex-1 bg-gray-50">
-        <div className="px-5 sm:px-20 md:px-30 lg:px-45 pt-6 pb-8">
+        <div className="px-4 sm:px-6 md:px-10 lg:px-20 xl:px-30 pt-4 sm:pt-6 pb-6 sm:pb-8">
           {/* Header with Back Button */}
-          <div className="flex items-center space-x-3 mb-6">
+          <div className="flex items-center space-x-2 sm:space-x-3 mb-4 sm:mb-6">
             <button
               onClick={handleBack}
-              className="p-2 text-gray-600 hover:text-gray-800 hover:bg-gray-100 rounded-lg transition-colors"
+              className="p-1.5 sm:p-2 text-gray-600 hover:text-gray-800 hover:bg-gray-100 rounded-lg transition-colors"
               title="Back to Book List"
             >
-              <ArrowLeft size={20} />
+              <ArrowLeft size={18} className="sm:w-5 sm:h-5" />
             </button>
-            <h1 className="text-2xl font-bold text-gray-900">Delete Book</h1>
+            <h1 className="text-xl sm:text-2xl font-bold text-gray-900">Delete Book</h1>
           </div>
 
           {/* Delete Confirmation */}
-          <div className="bg-white rounded-lg border border-gray-200 overflow-hidden max-w-2xl mx-auto">
-            <div className="p-8">
+          <div className="bg-white rounded-lg border border-gray-200 overflow-hidden max-w-md sm:max-w-lg md:max-w-2xl mx-auto">
+            <div className="p-4 sm:p-6 md:p-8">
               <Delete 
                 book={book}
                 onClose={handleCancel}

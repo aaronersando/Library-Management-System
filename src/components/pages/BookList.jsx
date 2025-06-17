@@ -48,37 +48,39 @@ const BookList = () => {
   };
 
   // Loading and error states
-  if (loading) return <div className="flex-1 bg-gray-50 flex items-center justify-center"><p className="text-lg text-gray-600">Loading books...</p></div>;
-  if (error) return <div className="flex-1 bg-gray-50 flex items-center justify-center"><div className="bg-red-100 text-red-700 p-4 rounded-lg">{error}</div></div>;
+  if (loading) return <div className="flex-1 bg-gray-50 flex items-center justify-center p-4"><p className="text-base sm:text-lg text-gray-600 text-center">Loading books...</p></div>;
+  if (error) return <div className="flex-1 bg-gray-50 flex items-center justify-center p-4"><div className="bg-red-100 text-red-700 p-3 sm:p-4 rounded-lg text-sm sm:text-base">{error}</div></div>;
 
   return (
-    <div className="px-5 sm:px-20 md:px-30 lg:px-45 pt-6 pb-4">
+    <div className="px-4 sm:px-6 md:px-10 lg:px-20 xl:px-30 pt-4 sm:pt-6 pb-4 sm:pb-6">
       {/* Header */}
-      <div className="flex items-center justify-between mb-6">
-        <h1 className="text-2xl font-bold text-gray-900">Book Collection</h1>
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-3 sm:space-y-0 mb-4 sm:mb-6">
+        <h1 className="text-xl sm:text-2xl font-bold text-gray-900">Book Collection</h1>
         
         {/* Search */}
-        <div className="relative">
+        <div className="relative w-full sm:w-auto">
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={16} />
           <input
             type="text"
             placeholder="Search books..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent w-80"
+            className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent w-full sm:w-80"
           />
         </div>
       </div>
 
       {/* Books Table */}
       {filteredBooks.length === 0 ? (
-        <div className="text-center text-gray-500 py-12 bg-white rounded-lg border">
-          <p>{searchTerm ? `No books found matching "${searchTerm}"` : "No books found. Add some books to get started!"}</p>
+        <div className="text-center text-gray-500 py-8 sm:py-12 bg-white rounded-lg border">
+          <p className="text-sm sm:text-base px-4">
+            {searchTerm ? `No books found matching "${searchTerm}"` : "No books found. Add some books to get started!"}
+          </p>
         </div>
       ) : (
         <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
-          {/* Table Header */}
-          <div className="grid grid-cols-12 gap-4 px-6 py-4 bg-gray-50 border-b border-gray-200 font-medium text-gray-700 text-sm">
+          {/* Table Header - Hidden on mobile */}
+          <div className="hidden sm:grid grid-cols-12 gap-4 px-4 sm:px-6 py-3 sm:py-4 bg-gray-50 border-b border-gray-200 font-medium text-gray-700 text-xs sm:text-sm">
             {['TITLE', 'AUTHOR', 'ISBN', 'CATEGORY', 'ACTIONS'].map((header, index) => (
               <div key={header} className={`${index === 4 ? 'col-span-3 text-center' : 'col-span-2'} ${index === 0 ? 'col-span-3' : ''}`}>
                 {header}
@@ -89,9 +91,51 @@ const BookList = () => {
           {/* Table Body */}
           <div className="divide-y divide-gray-200">
             {filteredBooks.map((book) => (
-              <div key={book.id} className="grid grid-cols-12 gap-4 px-6 py-4 hover:bg-gray-50 transition-colors">
-                {/* Title with Image */}
-                <div className="col-span-3 flex items-center space-x-3">
+              <div key={book.id} className="sm:grid sm:grid-cols-12 sm:gap-4 px-4 sm:px-6 py-4 hover:bg-gray-50 transition-colors">
+                {/* Mobile View */}
+                <div className="flex flex-col space-y-2 sm:hidden">
+                  {/* Title with Image */}
+                  <div className="flex items-start space-x-3">
+                    <img 
+                      src={book.imageUrl || "https://placehold.co/40x50"} 
+                      alt={book.title}
+                      className="w-10 h-12 object-cover rounded flex-shrink-0"
+                      onError={(e) => e.target.src = "https://placehold.co/40x50"}
+                    />
+                    <div>
+                      <h3 className="font-medium text-gray-900 text-sm leading-tight">{book.title}</h3>
+                      <p className="text-gray-700 text-xs mt-1">by {book.author}</p>
+                      <p className="text-gray-600 text-xs mt-0.5">ISBN: {book.isbn}</p>
+                    </div>
+                  </div>
+                  
+                  {/* Category and Actions */}
+                  <div className="flex items-center justify-between pt-1">
+                    <span className="inline-block bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded-full">
+                      {book.genre || "Fiction"}
+                    </span>
+
+                    <div className="flex items-center space-x-1">
+                      {[
+                        { icon: Info, action: () => actions.view(book.id), color: "blue", title: "View Details" },
+                        { icon: Edit, action: () => actions.edit(book.id), color: "green", title: "Edit Book" },
+                        { icon: Trash2, action: () => actions.delete(book.id), color: "red", title: "Delete Book" }
+                      ].map(({ icon: Icon, action, color, title }, index) => (
+                        <button
+                          key={index}
+                          onClick={action}
+                          className={`p-1.5 text-${color}-600 hover:bg-${color}-50 rounded-lg transition-colors`}
+                          title={title}
+                        >
+                          <Icon size={16} />
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Desktop View */}
+                <div className="hidden sm:flex sm:col-span-3 items-center space-x-3">
                   <img 
                     src={book.imageUrl || "https://placehold.co/40x50"} 
                     alt={book.title}
@@ -101,17 +145,21 @@ const BookList = () => {
                   <h3 className="font-medium text-gray-900 text-sm leading-tight">{book.title}</h3>
                 </div>
 
-                {/* Author, ISBN, Category */}
-                <div className="col-span-2 flex items-center"><span className="text-gray-700 text-sm">{book.author}</span></div>
-                <div className="col-span-2 flex items-center"><span className="text-gray-600 text-sm">{book.isbn}</span></div>
-                <div className="col-span-2 flex items-center">
+                <div className="hidden sm:flex sm:col-span-2 items-center">
+                  <span className="text-gray-700 text-sm">{book.author}</span>
+                </div>
+                
+                <div className="hidden sm:flex sm:col-span-2 items-center">
+                  <span className="text-gray-600 text-sm">{book.isbn}</span>
+                </div>
+                
+                <div className="hidden sm:flex sm:col-span-2 items-center">
                   <span className="inline-block bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded-full">
                     {book.genre || "Fiction"}
                   </span>
                 </div>
 
-                {/* Actions */}
-                <div className="col-span-3 flex items-center justify-center space-x-2">
+                <div className="hidden sm:flex sm:col-span-3 items-center justify-center space-x-2">
                   {[
                     { icon: Info, action: () => actions.view(book.id), color: "blue", title: "View Details" },
                     { icon: Edit, action: () => actions.edit(book.id), color: "green", title: "Edit Book" },
