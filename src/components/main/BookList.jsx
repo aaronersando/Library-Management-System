@@ -10,6 +10,7 @@ function BookList({ searchTerm = "", refreshTrigger = 0, onDeleteClick, onBookCl
     const [pageNumber, setPageNumber] = useState(0);
     const [sortField, setSortField] = useState("title");
     const [sortDirection, setSortDirection] = useState("asc");
+    const [categoryFilter, setCategoryFilter] = useState("All");
 
     const booksPerPage = 8;
     const pagesVisited = pageNumber * booksPerPage;
@@ -41,16 +42,27 @@ function BookList({ searchTerm = "", refreshTrigger = 0, onDeleteClick, onBookCl
         listBooks();
     }, [refreshTrigger]); // Refresh when refreshTrigger changes
 
-    // Reset to page 1 when sort changes
+    // Reset to page 1 when filters or sort change
     useEffect(() => {
         setPageNumber(0);
-    }, [sortField, sortDirection, searchTerm]);
+    }, [sortField, sortDirection, searchTerm, categoryFilter]);
 
-    // Filter books based on search term passed from Home
-    const filteredBooks = books.filter(book =>
-        book.title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        book.author?.toLowerCase().includes(searchTerm.toLowerCase())
-    );
+    // Get unique categories from books
+    const getUniqueCategories = () => {
+        const categories = books.map(book => book.genre || "Uncategorized").filter(Boolean);
+        return ["All", ...new Set(categories)].sort();
+    };
+
+    // Filter books based on search term and category
+    const filteredBooks = books.filter(book => {
+        const matchesSearch = book.title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                             book.author?.toLowerCase().includes(searchTerm.toLowerCase());
+        
+        const matchesCategory = categoryFilter === "All" || 
+                               book.genre === categoryFilter;
+        
+        return matchesSearch && matchesCategory;
+    });
 
     // Sort the filtered books
     const sortedBooks = [...filteredBooks].sort((a, b) => {
@@ -120,42 +132,64 @@ function BookList({ searchTerm = "", refreshTrigger = 0, onDeleteClick, onBookCl
     
     return(
         <div className="px-4 sm:px-10 md:px-20 lg:px-30 xl:px-45 pb-8">
-            {/* Sorting controls */}
-            {filteredBooks.length > 0 && (
-                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-end mb-4 space-y-2 sm:space-y-0 sm:space-x-3">
+            {/* Filtering and Sorting controls */}
+            {books.length > 0 && (
+                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-4 space-y-2 sm:space-y-0">
+                    {/* Category Filter */}
                     <div className="flex items-center space-x-2">
-                        <label htmlFor="sort-select" className="text-sm text-gray-600">
-                            Sort by:
+                        <label htmlFor="category-filter" className="text-sm text-gray-600">
+                            Category:
                         </label>
                         <select
-                            id="sort-select"
-                            value={sortField}
-                            onChange={handleSortChange}
+                            id="category-filter"
+                            value={categoryFilter}
+                            onChange={(e) => setCategoryFilter(e.target.value)}
                             className="border border-gray-300 rounded-md text-sm px-2 py-1.5 focus:outline-none focus:ring-2 focus:ring-blue-500"
                         >
-                            <option value="title">Title</option>
-                            <option value="author">Author</option>
-                            <option value="publishedYear">Published Year</option>
-                            <option value="genre">Genre</option>
+                            {getUniqueCategories().map(category => (
+                                <option key={category} value={category}>
+                                    {category}
+                                </option>
+                            ))}
                         </select>
                     </div>
                     
-                    <button
-                        onClick={toggleSortDirection}
-                        className="flex items-center space-x-1 text-sm border border-gray-300 rounded-md px-2 py-1.5 hover:bg-gray-50"
-                        title={sortDirection === "asc" ? "Ascending" : "Descending"}
-                    >
-                        <SortAsc size={16} className={sortDirection === "desc" ? "transform rotate-180" : ""} />
-                        <span>{sortDirection === "asc" ? "A to Z" : "Z to A"}</span>
-                    </button>
+                    {/* Sorting controls */}
+                    <div className="flex flex-col sm:flex-row items-start sm:items-center space-y-2 sm:space-y-0 sm:space-x-3">
+                        <div className="flex items-center space-x-2">
+                            <label htmlFor="sort-select" className="text-sm text-gray-600">
+                                Sort by:
+                            </label>
+                            <select
+                                id="sort-select"
+                                value={sortField}
+                                onChange={handleSortChange}
+                                className="border border-gray-300 rounded-md text-sm px-2 py-1.5 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            >
+                                <option value="title">Title</option>
+                                <option value="author">Author</option>
+                                <option value="publishedYear">Published Year</option>
+                                <option value="genre">Genre</option>
+                            </select>
+                        </div>
+                        
+                        <button
+                            onClick={toggleSortDirection}
+                            className="flex items-center space-x-1 text-sm border border-gray-300 rounded-md px-2 py-1.5 hover:bg-gray-50"
+                            title={sortDirection === "asc" ? "Ascending" : "Descending"}
+                        >
+                            <SortAsc size={16} className={sortDirection === "desc" ? "transform rotate-180" : ""} />
+                            <span>{sortDirection === "asc" ? "A to Z" : "Z to A"}</span>
+                        </button>
+                    </div>
                 </div>
             )}
 
             {filteredBooks.length === 0 ? (
                 <div className="text-center text-gray-500 py-8 sm:py-12 max-w-md mx-auto"> 
                     <p className="text-sm sm:text-base">
-                        {searchTerm ? 
-                            `No books found matching "${searchTerm}"` : 
+                        {searchTerm || categoryFilter !== "All" ? 
+                            `No books found matching your filters` : 
                             "No books found. Add some books to get started!"
                         }
                     </p>

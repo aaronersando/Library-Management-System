@@ -10,6 +10,8 @@ const BookList = () => {
   const [pageNumber, setPageNumber] = useState(0);
   const [sortField, setSortField] = useState("title");
   const [sortDirection, setSortDirection] = useState("asc");
+  const [categoryFilter, setCategoryFilter] = useState("All");
+
   const booksPerPage = 8;
   const pagesVisited = pageNumber * booksPerPage;
 
@@ -40,17 +42,22 @@ const BookList = () => {
     fetchBooks();
   }, []);
 
-  // Reset to page 1 when search or sort changes
+  // Reset to page 1 when search, category, or sort changes
   useEffect(() => {
     setPageNumber(0);
-  }, [searchTerm, sortField, sortDirection]);
+  }, [searchTerm, sortField, sortDirection, categoryFilter]);
 
-  // Filter books based on search term
-  const filteredBooks = books.filter(book =>
-    book.title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    book.author?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    book.isbn?.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  // Filter books based on search term and category
+  const filteredBooks = books.filter(book => {
+    const matchesSearch = book.title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                        book.author?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                        book.isbn?.toLowerCase().includes(searchTerm.toLowerCase());
+    
+    const matchesCategory = categoryFilter === "All" || 
+                          book.genre === categoryFilter;
+    
+    return matchesSearch && matchesCategory;
+  });
 
   // Sort the filtered books
   const sortedBooks = [...filteredBooks].sort((a, b) => {
@@ -99,6 +106,11 @@ const BookList = () => {
     setSortDirection(prev => prev === "asc" ? "desc" : "asc");
   }
 
+  const getUniqueCategories = () => {
+  const categories = books.map(book => book.genre || "Uncategorized").filter(Boolean);
+  return ["All", ...new Set(categories)].sort();
+};
+
   // Loading and error states
   if (loading) {
     return(
@@ -146,6 +158,24 @@ const BookList = () => {
         <>
           {/* Sorting controls */}
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-end mb-4 space-y-2 sm:space-y-0 sm:space-x-3">
+            {/* Category Filter */}
+            <div className="flex items-center space-x-2 mr-auto">
+              <label htmlFor="category-filter" className="text-sm text-gray-600">
+                Category:
+              </label>
+              <select
+                id="category-filter"
+                value={categoryFilter}
+                onChange={(e) => setCategoryFilter(e.target.value)}
+                className="border border-gray-300 rounded-md text-sm px-2 py-1.5 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              >
+                {getUniqueCategories().map(category => (
+                  <option key={category} value={category}>
+                    {category}
+                  </option>
+                ))}
+              </select>
+            </div>
             <div className="flex items-center space-x-2">
               <label htmlFor="sort-select" className="text-sm text-gray-600">
                 Sort by:
