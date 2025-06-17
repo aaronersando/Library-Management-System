@@ -3,11 +3,13 @@ import { db } from "../../config/firebase";
 import { useEffect, useState } from "react";
 import Book from "../main/Book";
 import ReactPaginate from "react-paginate";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { ChevronLeft, ChevronRight, SortAsc } from "lucide-react";
 
 function BookList({ searchTerm = "", refreshTrigger = 0, onDeleteClick, onBookClick, onEditClick }){
     const [books, setBooks] = useState([]);
     const [pageNumber, setPageNumber] = useState(0);
+    const [sortField, setSortField] = useState("title");
+    const [sortDirection, setSortDirection] = useState("asc");
 
     const booksPerPage = 8;
     const pagesVisited = pageNumber * booksPerPage;
@@ -39,33 +41,66 @@ function BookList({ searchTerm = "", refreshTrigger = 0, onDeleteClick, onBookCl
         listBooks();
     }, [refreshTrigger]); // Refresh when refreshTrigger changes
 
+    // Reset to page 1 when sort changes
+    useEffect(() => {
+        setPageNumber(0);
+    }, [sortField, sortDirection, searchTerm]);
+
     // Filter books based on search term passed from Home
     const filteredBooks = books.filter(book =>
         book.title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
         book.author?.toLowerCase().includes(searchTerm.toLowerCase())
     );
 
-    const displayBooks = filteredBooks
+    // Sort the filtered books
+    const sortedBooks = [...filteredBooks].sort((a, b) => {
+        // Handle null values
+        const aValue = a[sortField] || "";
+        const bValue = b[sortField] || "";
+        
+        // Special case for numeric fields
+        if (sortField === "publishedYear") {
+            const numA = Number(aValue) || 0;
+            const numB = Number(bValue) || 0;
+            return sortDirection === "asc" ? numA - numB : numB - numA;
+        }
+        
+        // Default string comparison
+        if (typeof aValue === "string" && typeof bValue === "string") {
+            return sortDirection === "asc" 
+                ? aValue.localeCompare(bValue) 
+                : bValue.localeCompare(aValue);
+        }
+        
+        return 0;
+    });
+
+    const displayBooks = sortedBooks
         .slice(pagesVisited, pagesVisited + booksPerPage)
         .map((book) => (
-                        <Book 
-                            key={book.id} 
-                            book={book} 
-                            onDelete={onDeleteClick}
-                            onBookClick={onBookClick}
-                            onEditClick={onEditClick}
-                        />
-                    ));
+            <Book 
+                key={book.id} 
+                book={book} 
+                onDelete={onDeleteClick}
+                onBookClick={onBookClick}
+                onEditClick={onEditClick}
+            />
+        ));
 
-
-    const pageCount = Math.ceil(filteredBooks.length / booksPerPage);
+    const pageCount = Math.ceil(sortedBooks.length / booksPerPage);
 
     const changePage = ({selected}) => {
         setPageNumber(selected);
         window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
-    
+    const handleSortChange = (e) => {
+        setSortField(e.target.value);
+    }
+
+    const toggleSortDirection = () => {
+        setSortDirection(prev => prev === "asc" ? "desc" : "asc");
+    }
 
     if (loading){
         return(
@@ -85,6 +120,37 @@ function BookList({ searchTerm = "", refreshTrigger = 0, onDeleteClick, onBookCl
     
     return(
         <div className="px-4 sm:px-10 md:px-20 lg:px-30 xl:px-45 pb-8">
+            {/* Sorting controls */}
+            {filteredBooks.length > 0 && (
+                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-end mb-4 space-y-2 sm:space-y-0 sm:space-x-3">
+                    <div className="flex items-center space-x-2">
+                        <label htmlFor="sort-select" className="text-sm text-gray-600">
+                            Sort by:
+                        </label>
+                        <select
+                            id="sort-select"
+                            value={sortField}
+                            onChange={handleSortChange}
+                            className="border border-gray-300 rounded-md text-sm px-2 py-1.5 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        >
+                            <option value="title">Title</option>
+                            <option value="author">Author</option>
+                            <option value="publishedYear">Published Year</option>
+                            <option value="genre">Genre</option>
+                        </select>
+                    </div>
+                    
+                    <button
+                        onClick={toggleSortDirection}
+                        className="flex items-center space-x-1 text-sm border border-gray-300 rounded-md px-2 py-1.5 hover:bg-gray-50"
+                        title={sortDirection === "asc" ? "Ascending" : "Descending"}
+                    >
+                        <SortAsc size={16} className={sortDirection === "desc" ? "transform rotate-180" : ""} />
+                        <span>{sortDirection === "asc" ? "A to Z" : "Z to A"}</span>
+                    </button>
+                </div>
+            )}
+
             {filteredBooks.length === 0 ? (
                 <div className="text-center text-gray-500 py-8 sm:py-12 max-w-md mx-auto"> 
                     <p className="text-sm sm:text-base">

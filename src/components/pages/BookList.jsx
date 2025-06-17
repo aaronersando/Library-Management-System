@@ -1,14 +1,15 @@
 import { useState, useEffect } from "react";
 import { collection, getDocs } from "firebase/firestore";
 import { db } from "../../config/firebase";
-import { Search, Info, Edit, Trash2, ChevronLeft, ChevronRight } from "lucide-react";
+import { Search, Info, Edit, Trash2, ChevronLeft, ChevronRight, SortAsc } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import ReactPaginate from "react-paginate";
 
 const BookList = () => {
   const [books, setBooks] = useState([]);
-
   const [pageNumber, setPageNumber] = useState(0);
+  const [sortField, setSortField] = useState("title");
+  const [sortDirection, setSortDirection] = useState("asc");
   const booksPerPage = 8;
   const pagesVisited = pageNumber * booksPerPage;
 
@@ -39,9 +40,10 @@ const BookList = () => {
     fetchBooks();
   }, []);
 
+  // Reset to page 1 when search or sort changes
   useEffect(() => {
     setPageNumber(0);
-  }, [searchTerm]);
+  }, [searchTerm, sortField, sortDirection]);
 
   // Filter books based on search term
   const filteredBooks = books.filter(book =>
@@ -50,6 +52,29 @@ const BookList = () => {
     book.isbn?.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
+  // Sort the filtered books
+  const sortedBooks = [...filteredBooks].sort((a, b) => {
+    // Handle null values
+    const aValue = a[sortField] || "";
+    const bValue = b[sortField] || "";
+    
+    // Special case for numeric fields
+    if (sortField === "publishedYear") {
+        const numA = Number(aValue) || 0;
+        const numB = Number(bValue) || 0;
+        return sortDirection === "asc" ? numA - numB : numB - numA;
+    }
+    
+    // Default string comparison
+    if (typeof aValue === "string" && typeof bValue === "string") {
+        return sortDirection === "asc" 
+            ? aValue.localeCompare(bValue) 
+            : bValue.localeCompare(aValue);
+    }
+    
+    return 0;
+  });
+
   // Action handlers
   const actions = {
     view: (id) => navigate(`/book-details?id=${id}`),
@@ -57,14 +82,22 @@ const BookList = () => {
     delete: (id) => navigate(`/delete-book?id=${id}`)
   };
 
-  const currentBooks = filteredBooks.slice(pagesVisited, pagesVisited + booksPerPage);
+  const currentBooks = sortedBooks.slice(pagesVisited, pagesVisited + booksPerPage);
 
-  const pageCount = Math.ceil(filteredBooks.length / booksPerPage);
+  const pageCount = Math.ceil(sortedBooks.length / booksPerPage);
 
   const changePage = ({ selected }) => {
     setPageNumber(selected);
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
+
+  const handleSortChange = (e) => {
+    setSortField(e.target.value);
+  }
+
+  const toggleSortDirection = () => {
+    setSortDirection(prev => prev === "asc" ? "desc" : "asc");
+  }
 
   // Loading and error states
   if (loading) {
@@ -111,6 +144,36 @@ const BookList = () => {
         </div>
       ) : (
         <>
+          {/* Sorting controls */}
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-end mb-4 space-y-2 sm:space-y-0 sm:space-x-3">
+            <div className="flex items-center space-x-2">
+              <label htmlFor="sort-select" className="text-sm text-gray-600">
+                Sort by:
+              </label>
+              <select
+                id="sort-select"
+                value={sortField}
+                onChange={handleSortChange}
+                className="border border-gray-300 rounded-md text-sm px-2 py-1.5 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              >
+                <option value="title">Title</option>
+                <option value="author">Author</option>
+                <option value="publishedYear">Published Year</option>
+                <option value="genre">Genre</option>
+                <option value="isbn">ISBN</option>
+              </select>
+            </div>
+            
+            <button
+              onClick={toggleSortDirection}
+              className="flex items-center space-x-1 text-sm border border-gray-300 rounded-md px-2 py-1.5 hover:bg-gray-50"
+              title={sortDirection === "asc" ? "Ascending" : "Descending"}
+            >
+              <SortAsc size={16} className={sortDirection === "desc" ? "transform rotate-180" : ""} />
+              <span>{sortDirection === "asc" ? "A to Z" : "Z to A"}</span>
+            </button>
+          </div>
+
           <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
             {/* Table Header */}
             <div className="hidden sm:grid grid-cols-12 gap-4 px-4 sm:px-6 py-3 sm:py-4 bg-gray-50 border-b border-gray-200 font-medium text-gray-700 text-xs sm:text-sm">
