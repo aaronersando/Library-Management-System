@@ -1,11 +1,11 @@
 import {useState} from "react";
 import NavBar from "../common/NavBar";
 import FooterComp from "../common/FooterComp";
-import BookList from "./BookList";
+import BookList from "../main/BookList";
 import Modal from "../common/Modal";
 import Add from "../modal/Add";
 import Edit from "../modal/Edit";
-import Delete from "../function/Delete";
+import Delete from "../modal/Delete";
 import BookDetails from "../modal/BookDetails";
 import { Plus, Search } from "lucide-react";
 
