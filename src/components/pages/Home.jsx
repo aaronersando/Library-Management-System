@@ -92,25 +92,25 @@ function Home(){
     return (
         <div className="min-h-screen flex flex-col">
             <main className="flex-1 bg-gray-50">
-                <div className="px-5 sm:px-20 md:px-30 lg:px-45 pt-6 pb-4">
-                    <div className="flex items-center justify-between">
-                        <h1 className="text-2xl font-bold text-gray-900">Book Collection</h1>
+                <div className="px-4 sm:px-10 md:px-20 lg:px-30 xl:px-45 pt-4 sm:pt-6 pb-3 sm:pb-4">
+                    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-3 sm:space-y-0">
+                        <h1 className="text-xl sm:text-2xl font-bold text-gray-900">Book Collection</h1>
                         
-                        <div className="flex items-center space-x-4">
-                            <div className="relative">
+                        <div className="flex flex-col sm:flex-row items-start sm:items-center space-y-3 sm:space-y-0 sm:space-x-4 w-full sm:w-auto">
+                            <div className="relative w-full sm:w-auto">
                                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={16} />
                                 <input
                                     type="text"
                                     placeholder="Search books..."
                                     value={searchTerm}
                                     onChange={(e) => setSearchTerm(e.target.value)}
-                                    className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                    className="w-full sm:w-auto pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                                 />
                             </div>
                             
                             <button 
                                 onClick={handleAddBook}
-                                className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors flex items-center space-x-2"
+                                className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors flex items-center justify-center space-x-2 w-full sm:w-auto"
                             >
                                 <Plus size={16} />
                                 <span>Add Book</span>

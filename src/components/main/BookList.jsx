@@ -55,7 +55,7 @@ function BookList({ searchTerm = "", refreshTrigger = 0, onDeleteClick, onBookCl
     }
     
     return(
-        <div className="px-5 sm:px-20 md:px-30 lg:px-45 pb-8">
+        <div className="px-4 sm:px-10 md:px-20 lg:px-30 xl:px-45 pb-8">
             {filteredBooks.length === 0 ? (
                 <div className="text-center text-gray-500 py-8 sm:py-12 max-w-md mx-auto"> 
                     <p className="text-sm sm:text-base">
@@ -66,7 +66,7 @@ function BookList({ searchTerm = "", refreshTrigger = 0, onDeleteClick, onBookCl
                     </p>
                 </div>
             ) : (
-                <div className="grid gap-3 sm:gap-4 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 ">
+                <div className="grid gap-3 sm:gap-4 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 ">
                     {filteredBooks.map((book) => (
                         <Book 
                             key={book.id} 

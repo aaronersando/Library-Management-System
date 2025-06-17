@@ -33,17 +33,17 @@ function Delete({ book, onClose, onBookDeleted }) {
     };
 
     return (
-        <div className="space-y-4">
+        <div className="space-y-3 sm:space-y-4">
             {/* Warning Icon and Message */}
-            <div className="flex items-center space-x-3 p-4 bg-orange-50 border border-orange-200 rounded-lg">
+            <div className="flex items-center space-x-2 sm:space-x-3 p-3 sm:p-4 bg-orange-50 border border-orange-200 rounded-lg">
                 <AlertTriangle className="text-orange-600 flex-shrink-0" size={20} />
-                <p className="text-sm font-medium text-orange-600">
+                <p className="text-xs sm:text-sm font-medium text-orange-600">
                     This action cannot be undone
                 </p>
             </div>
 
             {/* Confirmation Message */}
-            <div className="text-gray-700">
+            <div className="text-gray-700 text-sm sm:text-base">
                 <p>
                     Are you sure you want to delete "{book?.title}" by {book?.author}?
                 </p>
@@ -51,23 +51,23 @@ function Delete({ book, onClose, onBookDeleted }) {
 
             {/* Error Message */}
             {error && (
-                <div className="p-3 bg-red-50 border border-red-200 rounded-lg">
-                    <p className="text-sm text-red-700">{error}</p>
+                <div className="p-2 sm:p-3 bg-red-50 border border-red-200 rounded-lg">
+                    <p className="text-xs sm:text-sm text-red-700">{error}</p>
                 </div>
             )}
 
             {/* Action Buttons */}
-            <div className="flex justify-end space-x-3 pt-4">
+            <div className="flex flex-col sm:flex-row sm:justify-end space-y-2 sm:space-y-0 sm:space-x-3 pt-3 sm:pt-4">
                 <button
                     onClick={onClose}
-                    className="px-4 py-2 text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors font-medium"
+                    className="px-4 py-2 text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors font-medium w-full sm:w-auto"
                     disabled={loading}
                 >
                     Cancel
                 </button>
                 <button
                     onClick={deleteBook}
-                    className={`px-4 py-2 rounded-lg transition-colors font-medium ${
+                    className={`px-4 py-2 rounded-lg transition-colors font-medium w-full sm:w-auto ${
                         loading
                             ? 'bg-gray-300 cursor-not-allowed text-gray-500'
                             : 'bg-red-600 text-white hover:bg-red-700'

@@ -18,7 +18,7 @@ function NavBar(){
     ];
 
     return(
-        <nav className="flex flex-row place-content-between px-5 sm:px-20 md:px-30 lg:px-45 pt-5 pb-3 shadow-sm z-30 relative">
+        <nav className="flex flex-row place-content-between px-4 sm:px-10 md:px-20 lg:px-30 xl:px-45 pt-5 pb-3 shadow-sm z-30 relative">
             <div className="flex flex-row space-x-2">
                 <Book color="blue" size={27}/>
                 <Link to="/" className="font-bold text-lg hover:text-blue-600 transition-colors">
@@ -28,7 +28,7 @@ function NavBar(){
             
             {/* Mobile menu button */}
             <button 
-                className="md:hidden flex items-center"
+                className="xl:hidden flex items-center"
                 onClick={toggleMenu}
                 aria-label="Toggle menu"
             >
@@ -36,7 +36,7 @@ function NavBar(){
             </button>
             
             {/* Desktop navigation */}
-            <div className="hidden md:flex flex-row space-x-2 sm:space-x-3 md:space-x-4 lg:space-x-6">
+            <div className="hidden xl:flex flex-row space-x-2 sm:space-x-3 md:space-x-4 lg:space-x-6">
                 {navItems.map((item) => (
                     <Link
                         key={item.path}
@@ -54,7 +54,7 @@ function NavBar(){
             
             {/* Mobile menu */}
             {isMenuOpen && (
-                <div className="md:hidden absolute top-full left-0 right-0 bg-white shadow-md z-50 mt-1 py-3 px-5">
+                <div className="xl:hidden absolute top-full left-0 right-0 bg-white shadow-md z-50 mt-1 py-3 px-5">
                     <div className="flex flex-col space-y-2">
                         {navItems.map((item) => (
                             <Link
