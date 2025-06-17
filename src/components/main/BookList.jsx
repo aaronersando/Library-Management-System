@@ -2,9 +2,16 @@ import { collection, getDocs } from "firebase/firestore";
 import { db } from "../../config/firebase";
 import { useEffect, useState } from "react";
 import Book from "../main/Book";
+import ReactPaginate from "react-paginate";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 
 function BookList({ searchTerm = "", refreshTrigger = 0, onDeleteClick, onBookClick, onEditClick }){
     const [books, setBooks] = useState([]);
+    const [pageNumber, setPageNumber] = useState(0);
+
+    const booksPerPage = 8;
+    const pagesVisited = pageNumber * booksPerPage;
+
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
 
@@ -38,6 +45,28 @@ function BookList({ searchTerm = "", refreshTrigger = 0, onDeleteClick, onBookCl
         book.author?.toLowerCase().includes(searchTerm.toLowerCase())
     );
 
+    const displayBooks = filteredBooks
+        .slice(pagesVisited, pagesVisited + booksPerPage)
+        .map((book) => (
+                        <Book 
+                            key={book.id} 
+                            book={book} 
+                            onDelete={onDeleteClick}
+                            onBookClick={onBookClick}
+                            onEditClick={onEditClick}
+                        />
+                    ));
+
+
+    const pageCount = Math.ceil(filteredBooks.length / booksPerPage);
+
+    const changePage = ({selected}) => {
+        setPageNumber(selected);
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    
+
     if (loading){
         return(
             <div className="w-full px-4 sm:px-6 md:px-10 lg:px-20 py-8 text-center">
@@ -66,17 +95,59 @@ function BookList({ searchTerm = "", refreshTrigger = 0, onDeleteClick, onBookCl
                     </p>
                 </div>
             ) : (
-                <div className="grid gap-3 sm:gap-4 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 ">
-                    {filteredBooks.map((book) => (
-                        <Book 
-                            key={book.id} 
-                            book={book} 
-                            onDelete={onDeleteClick}
-                            onBookClick={onBookClick}
-                            onEditClick={onEditClick}
-                        />
-                    ))}
-                </div>
+                <>
+                    <div className="grid gap-3 sm:gap-4 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4">
+                        {displayBooks}
+                    </div>
+                    
+                    {/* Pagination */}
+                    {pageCount > 1 && (
+                        <div className="flex justify-center mt-8">
+                            <ReactPaginate
+                                previousLabel={<ChevronLeft size={18} />}
+                                nextLabel={<ChevronRight size={18} />}
+                                breakLabel="..."
+                                pageCount={pageCount}
+                                marginPagesDisplayed={1}
+                                pageRangeDisplayed={3}
+                                onPageChange={changePage}
+                                forcePage={pageNumber}
+                                
+                                // Container styling
+                                containerClassName="flex items-center space-x-1"
+                                
+                                // Page number styling
+                                pageClassName="hidden sm:block"
+                                pageLinkClassName="flex items-center justify-center w-8 h-8 rounded-md border border-gray-300 text-gray-700 hover:bg-gray-100"
+                                
+                                // Active page styling
+                                activeClassName="!border-blue-600"
+                                activeLinkClassName="!bg-blue-600 !text-white hover:!bg-blue-700"
+                                
+                                // Previous/Next buttons
+                                previousClassName="flex items-center"
+                                nextClassName="flex items-center"
+                                previousLinkClassName="flex items-center justify-center w-8 h-8 rounded-md border border-gray-300 text-gray-700 hover:bg-gray-100"
+                                nextLinkClassName="flex items-center justify-center w-8 h-8 rounded-md border border-gray-300 text-gray-700 hover:bg-gray-100"
+                                
+                                // Disabled state
+                                disabledClassName="opacity-50 cursor-not-allowed"
+                                disabledLinkClassName="hover:!bg-transparent"
+                                
+                                // Break (ellipsis)
+                                breakClassName="hidden sm:flex items-center"
+                                breakLinkClassName="flex items-center justify-center w-8 h-8 text-gray-500"
+                            />
+                        </div>
+                    )}
+                    
+                    {/* Mobile page indicator */}
+                    {pageCount > 1 && (
+                        <div className="sm:hidden flex justify-center mt-3 text-sm text-gray-600">
+                            Page {pageNumber + 1} of {pageCount}
+                        </div>
+                    )}
+                </>
             )}
         </div>
     );

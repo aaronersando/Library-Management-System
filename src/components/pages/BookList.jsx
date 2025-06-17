@@ -1,11 +1,17 @@
 import { useState, useEffect } from "react";
 import { collection, getDocs } from "firebase/firestore";
 import { db } from "../../config/firebase";
-import { Search, Info, Edit, Trash2 } from "lucide-react";
+import { Search, Info, Edit, Trash2, ChevronLeft, ChevronRight } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import ReactPaginate from "react-paginate";
 
 const BookList = () => {
   const [books, setBooks] = useState([]);
+
+  const [pageNumber, setPageNumber] = useState(0);
+  const booksPerPage = 8;
+  const pagesVisited = pageNumber * booksPerPage;
+
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
@@ -33,6 +39,10 @@ const BookList = () => {
     fetchBooks();
   }, []);
 
+  useEffect(() => {
+    setPageNumber(0);
+  }, [searchTerm]);
+
   // Filter books based on search term
   const filteredBooks = books.filter(book =>
     book.title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -47,22 +57,32 @@ const BookList = () => {
     delete: (id) => navigate(`/delete-book?id=${id}`)
   };
 
-  // Loading and error states
-  if (loading){
-        return(
-            <div className="w-full px-4 sm:px-6 md:px-10 lg:px-20 py-8 text-center">
-                <p>Loading books...</p>
-            </div>
-        );
-    }
+  const currentBooks = filteredBooks.slice(pagesVisited, pagesVisited + booksPerPage);
 
-    if(error){
-        return(
-            <div className="w-full px-4 sm:px-6 md:px-10 lg:px-20 py-8 text-center">
-                <div className="bg-red-100 text-red-700 p-3 sm:p-4 rounded-lg max-w-2xl mx-auto">{error}</div>
-            </div>
-        );
-    }
+  const pageCount = Math.ceil(filteredBooks.length / booksPerPage);
+
+  const changePage = ({ selected }) => {
+    setPageNumber(selected);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  // Loading and error states
+  if (loading) {
+    return(
+      <div className="w-full px-4 sm:px-6 md:px-10 lg:px-20 py-8 text-center">
+        <p>Loading books...</p>
+      </div>
+    );
+  }
+
+  if(error) {
+    return(
+      <div className="w-full px-4 sm:px-6 md:px-10 lg:px-20 py-8 text-center">
+        <div className="bg-red-100 text-red-700 p-3 sm:p-4 rounded-lg max-w-2xl mx-auto">{error}</div>
+      </div>
+    );
+  }
+
   return (
     <div className="px-4 sm:px-6 md:px-10 lg:px-20 xl:px-30 pt-4 sm:pt-6 pb-4 sm:pb-6">
       {/* Header */}
@@ -90,107 +110,157 @@ const BookList = () => {
           </p>
         </div>
       ) : (
-        <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
-          {/* Table Header - Hidden on mobile */}
-          <div className="hidden sm:grid grid-cols-12 gap-4 px-4 sm:px-6 py-3 sm:py-4 bg-gray-50 border-b border-gray-200 font-medium text-gray-700 text-xs sm:text-sm">
-            {['TITLE', 'AUTHOR', 'ISBN', 'CATEGORY', 'ACTIONS'].map((header, index) => (
-              <div key={header} className={`${index === 4 ? 'col-span-3 text-center' : 'col-span-2'} ${index === 0 ? 'col-span-3' : ''}`}>
-                {header}
-              </div>
-            ))}
-          </div>
+        <>
+          <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
+            {/* Table Header */}
+            <div className="hidden sm:grid grid-cols-12 gap-4 px-4 sm:px-6 py-3 sm:py-4 bg-gray-50 border-b border-gray-200 font-medium text-gray-700 text-xs sm:text-sm">
+              {['TITLE', 'AUTHOR', 'ISBN', 'CATEGORY', 'ACTIONS'].map((header, index) => (
+                <div key={header} className={`${index === 4 ? 'col-span-3 text-center' : 'col-span-2'} ${index === 0 ? 'col-span-3' : ''}`}>
+                  {header}
+                </div>
+              ))}
+            </div>
 
-          {/* Table Body */}
-          <div className="divide-y divide-gray-200">
-            {filteredBooks.map((book) => (
-              <div key={book.id} className="sm:grid sm:grid-cols-12 sm:gap-4 px-4 sm:px-6 py-4 hover:bg-gray-50 transition-colors">
-                {/* Mobile View */}
-                <div className="flex flex-col space-y-2 sm:hidden">
-                  {/* Title with Image */}
-                  <div className="flex items-start space-x-3">
+            {/* Table Body */}
+            <div className="divide-y divide-gray-200">
+              {currentBooks.map((book) => (
+                <div key={book.id} className="sm:grid sm:grid-cols-12 sm:gap-4 px-4 sm:px-6 py-4 hover:bg-gray-50 transition-colors">
+                  {/* Mobile View */}
+                  <div className="flex flex-col space-y-2 sm:hidden">
+                    {/* Title with Image */}
+                    <div className="flex items-start space-x-3">
+                      <img 
+                        src={book.imageUrl || "https://placehold.co/40x50"} 
+                        alt={book.title}
+                        className="w-10 h-12 object-cover rounded flex-shrink-0"
+                        onError={(e) => e.target.src = "https://placehold.co/40x50"}
+                      />
+                      <div>
+                        <h3 className="font-medium text-gray-900 text-sm leading-tight">{book.title}</h3>
+                        <p className="text-gray-700 text-xs mt-1">by {book.author}</p>
+                        <p className="text-gray-600 text-xs mt-0.5">ISBN: {book.isbn}</p>
+                      </div>
+                    </div>
+                    
+                    {/* Category and Actions */}
+                    <div className="flex items-center justify-between pt-1">
+                      <span className="inline-block bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded-full">
+                        {book.genre || "Fiction"}
+                      </span>
+
+                      <div className="flex items-center space-x-1">
+                        {[
+                          { icon: Info, action: () => actions.view(book.id), color: "blue", title: "View Details" },
+                          { icon: Edit, action: () => actions.edit(book.id), color: "green", title: "Edit Book" },
+                          { icon: Trash2, action: () => actions.delete(book.id), color: "red", title: "Delete Book" }
+                        ].map(({ icon: Icon, action, color, title }, index) => (
+                          <button
+                            key={index}
+                            onClick={action}
+                            className={`p-1.5 text-${color}-600 hover:bg-${color}-50 rounded-lg transition-colors`}
+                            title={title}
+                          >
+                            <Icon size={16} />
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Desktop View */}
+                  <div className="hidden sm:flex sm:col-span-3 items-center space-x-3">
                     <img 
                       src={book.imageUrl || "https://placehold.co/40x50"} 
                       alt={book.title}
-                      className="w-10 h-12 object-cover rounded flex-shrink-0"
+                      className="w-10 h-12 object-cover rounded"
                       onError={(e) => e.target.src = "https://placehold.co/40x50"}
                     />
-                    <div>
-                      <h3 className="font-medium text-gray-900 text-sm leading-tight">{book.title}</h3>
-                      <p className="text-gray-700 text-xs mt-1">by {book.author}</p>
-                      <p className="text-gray-600 text-xs mt-0.5">ISBN: {book.isbn}</p>
-                    </div>
+                    <h3 className="font-medium text-gray-900 text-sm leading-tight">{book.title}</h3>
+                  </div>
+
+                  <div className="hidden sm:flex sm:col-span-2 items-center">
+                    <span className="text-gray-700 text-sm">{book.author}</span>
                   </div>
                   
-                  {/* Category and Actions */}
-                  <div className="flex items-center justify-between pt-1">
+                  <div className="hidden sm:flex sm:col-span-2 items-center">
+                    <span className="text-gray-600 text-sm">{book.isbn}</span>
+                  </div>
+                  
+                  <div className="hidden sm:flex sm:col-span-2 items-center">
                     <span className="inline-block bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded-full">
                       {book.genre || "Fiction"}
                     </span>
+                  </div>
 
-                    <div className="flex items-center space-x-1">
-                      {[
-                        { icon: Info, action: () => actions.view(book.id), color: "blue", title: "View Details" },
-                        { icon: Edit, action: () => actions.edit(book.id), color: "green", title: "Edit Book" },
-                        { icon: Trash2, action: () => actions.delete(book.id), color: "red", title: "Delete Book" }
-                      ].map(({ icon: Icon, action, color, title }, index) => (
-                        <button
-                          key={index}
-                          onClick={action}
-                          className={`p-1.5 text-${color}-600 hover:bg-${color}-50 rounded-lg transition-colors`}
-                          title={title}
-                        >
-                          <Icon size={16} />
-                        </button>
-                      ))}
-                    </div>
+                  <div className="hidden sm:flex sm:col-span-3 items-center justify-center space-x-2">
+                    {[
+                      { icon: Info, action: () => actions.view(book.id), color: "blue", title: "View Details" },
+                      { icon: Edit, action: () => actions.edit(book.id), color: "green", title: "Edit Book" },
+                      { icon: Trash2, action: () => actions.delete(book.id), color: "red", title: "Delete Book" }
+                    ].map(({ icon: Icon, action, color, title }, index) => (
+                      <button
+                        key={index}
+                        onClick={action}
+                        className={`p-2 text-${color}-600 hover:bg-${color}-50 rounded-lg transition-colors`}
+                        title={title}
+                      >
+                        <Icon size={16} />
+                      </button>
+                    ))}
                   </div>
                 </div>
-
-                {/* Desktop View */}
-                <div className="hidden sm:flex sm:col-span-3 items-center space-x-3">
-                  <img 
-                    src={book.imageUrl || "https://placehold.co/40x50"} 
-                    alt={book.title}
-                    className="w-10 h-12 object-cover rounded"
-                    onError={(e) => e.target.src = "https://placehold.co/40x50"}
-                  />
-                  <h3 className="font-medium text-gray-900 text-sm leading-tight">{book.title}</h3>
-                </div>
-
-                <div className="hidden sm:flex sm:col-span-2 items-center">
-                  <span className="text-gray-700 text-sm">{book.author}</span>
-                </div>
-                
-                <div className="hidden sm:flex sm:col-span-2 items-center">
-                  <span className="text-gray-600 text-sm">{book.isbn}</span>
-                </div>
-                
-                <div className="hidden sm:flex sm:col-span-2 items-center">
-                  <span className="inline-block bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded-full">
-                    {book.genre || "Fiction"}
-                  </span>
-                </div>
-
-                <div className="hidden sm:flex sm:col-span-3 items-center justify-center space-x-2">
-                  {[
-                    { icon: Info, action: () => actions.view(book.id), color: "blue", title: "View Details" },
-                    { icon: Edit, action: () => actions.edit(book.id), color: "green", title: "Edit Book" },
-                    { icon: Trash2, action: () => actions.delete(book.id), color: "red", title: "Delete Book" }
-                  ].map(({ icon: Icon, action, color, title }, index) => (
-                    <button
-                      key={index}
-                      onClick={action}
-                      className={`p-2 text-${color}-600 hover:bg-${color}-50 rounded-lg transition-colors`}
-                      title={title}
-                    >
-                      <Icon size={16} />
-                    </button>
-                  ))}
-                </div>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
-        </div>
+          
+          {/* Pagination */}
+          {pageCount > 1 && (
+            <div className="flex justify-center mt-8">
+              <ReactPaginate
+                previousLabel={<ChevronLeft size={18} />}
+                nextLabel={<ChevronRight size={18} />}
+                breakLabel="..."
+                pageCount={pageCount}
+                marginPagesDisplayed={1}
+                pageRangeDisplayed={3}
+                onPageChange={changePage}
+                forcePage={pageNumber}
+                
+                // Container styling
+                containerClassName="flex items-center space-x-1"
+                
+                // Page number styling
+                pageClassName="hidden sm:block"
+                pageLinkClassName="flex items-center justify-center w-8 h-8 rounded-md border border-gray-300 text-gray-700 hover:bg-gray-100"
+                
+                // Active page styling
+                activeClassName="!border-blue-600"
+                activeLinkClassName="!bg-blue-600 !text-white hover:!bg-blue-700"
+                
+                // Previous/Next buttons
+                previousClassName="flex items-center"
+                nextClassName="flex items-center"
+                previousLinkClassName="flex items-center justify-center w-8 h-8 rounded-md border border-gray-300 text-gray-700 hover:bg-gray-100"
+                nextLinkClassName="flex items-center justify-center w-8 h-8 rounded-md border border-gray-300 text-gray-700 hover:bg-gray-100"
+                
+                // Disabled state
+                disabledClassName="opacity-50 cursor-not-allowed"
+                disabledLinkClassName="hover:!bg-transparent"
+                
+                // Break (ellipsis)
+                breakClassName="hidden sm:flex items-center"
+                breakLinkClassName="flex items-center justify-center w-8 h-8 text-gray-500"
+              />
+            </div>
+          )}
+          
+          {/* Mobile page indicator */}
+          {pageCount > 1 && (
+            <div className="sm:hidden flex justify-center mt-3 text-sm text-gray-600">
+              Page {pageNumber + 1} of {pageCount}
+            </div>
+          )}
+        </>
       )}
     </div>
   );
