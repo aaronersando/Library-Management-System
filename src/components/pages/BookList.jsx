@@ -48,9 +48,21 @@ const BookList = () => {
   };
 
   // Loading and error states
-  if (loading) return <div className="flex-1 bg-gray-50 flex items-center justify-center p-4"><p className="text-base sm:text-lg text-gray-600 text-center">Loading books...</p></div>;
-  if (error) return <div className="flex-1 bg-gray-50 flex items-center justify-center p-4"><div className="bg-red-100 text-red-700 p-3 sm:p-4 rounded-lg text-sm sm:text-base">{error}</div></div>;
+  if (loading){
+        return(
+            <div className="w-full px-4 sm:px-6 md:px-10 lg:px-20 py-8 text-center">
+                <p>Loading books...</p>
+            </div>
+        );
+    }
 
+    if(error){
+        return(
+            <div className="w-full px-4 sm:px-6 md:px-10 lg:px-20 py-8 text-center">
+                <div className="bg-red-100 text-red-700 p-3 sm:p-4 rounded-lg max-w-2xl mx-auto">{error}</div>
+            </div>
+        );
+    }
   return (
     <div className="px-4 sm:px-6 md:px-10 lg:px-20 xl:px-30 pt-4 sm:pt-6 pb-4 sm:pb-6">
       {/* Header */}
