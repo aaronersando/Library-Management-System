@@ -3,18 +3,17 @@
 A modern and responsive React application for managing a library's book collection. The system allows librarians to manage books with features like adding, editing, viewing details, and deleting books.
 
 ## 📋 Table of Contents
-- [Overview](#overview)
-- [Features](#features)
-- [Technology Stack](#technology-stack)
-- [Screenshots](#screenshots)
-- [Getting Started](#getting-started)
+- [Overview](#-overview)
+- [Features](#-features)
+- [Technology Stack](#️-technology-stack)
+- [Screenshots](#-screenshots)
+- [Getting Started](#-getting-started)
   - [Prerequisites](#prerequisites)
   - [Installation](#installation)
   - [Firebase Setup](#firebase-setup)
   - [Environment Variables](#environment-variables)
-- [Project Structure](#project-structure)
-- [Usage](#usage)
-- [License](#license)
+- [Project Structure](#-project-structure)
+- [Usage](#-usage)
 
 ## 🔍 Overview
 
