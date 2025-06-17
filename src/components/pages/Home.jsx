@@ -1,6 +1,4 @@
 import {useState} from "react";
-import NavBar from "../common/NavBar";
-import FooterComp from "../common/FooterComp";
 import BookList from "../main/BookList";
 import Modal from "../common/Modal";
 import Add from "../modal/Add";
@@ -93,7 +91,6 @@ function Home(){
 
     return (
         <div className="min-h-screen flex flex-col">
-            <NavBar onAddBookClick={handleAddBook} />
             <main className="flex-1 bg-gray-50">
                 <div className="px-5 sm:px-20 md:px-30 lg:px-45 pt-6 pb-4">
                     <div className="flex items-center justify-between">
@@ -131,7 +128,6 @@ function Home(){
                     onEditClick={handleEditClick}
                 />
             </main>
-            <FooterComp />
 
             <Modal 
                 isOpen={isAddModalOpen} 
