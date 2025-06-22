@@ -11,8 +11,8 @@ const EditBook = () => {
   const [error, setError] = useState("");
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
-  
-  const bookId = searchParams.get('id');
+
+  const bookId = searchParams.get("id");
 
   const fetchBook = async () => {
     if (!bookId) {
@@ -24,7 +24,7 @@ const EditBook = () => {
       setLoading(true);
       const bookRef = doc(db, "books", bookId);
       const bookSnap = await getDoc(bookRef);
-      
+
       if (bookSnap.exists()) {
         setBook({ id: bookSnap.id, ...bookSnap.data() });
       } else {
@@ -43,18 +43,18 @@ const EditBook = () => {
   }, [bookId]);
 
   const handleBack = () => {
-    navigate('/books');
+    navigate("/books");
   };
 
   const handleCancel = () => {
     // Navigate back to book list when cancelled
-    navigate('/books');
+    navigate("/books");
   };
 
   const handleBookUpdated = () => {
     // Navigate back to book list after update
     setTimeout(() => {
-      navigate('/books');
+      navigate("/books");
     }, 1500);
   };
 
@@ -62,7 +62,9 @@ const EditBook = () => {
     return (
       <div className="min-h-screen flex flex-col">
         <main className="flex-1 bg-gray-50 flex items-center justify-center p-4">
-          <p className="text-base sm:text-lg text-gray-600 text-center">Loading book details...</p>
+          <p className="text-base sm:text-lg text-gray-600 text-center">
+            Loading book details...
+          </p>
         </main>
       </div>
     );
@@ -102,13 +104,15 @@ const EditBook = () => {
             >
               <ArrowLeft size={18} className="sm:w-5 sm:h-5" />
             </button>
-            <h1 className="text-xl sm:text-2xl font-bold text-gray-900">Edit Book</h1>
+            <h1 className="text-xl sm:text-2xl font-bold text-gray-900">
+              Edit Book
+            </h1>
           </div>
 
           {/* Form Card */}
           <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
             <div className="p-4 sm:p-6 md:p-8">
-              <Edit 
+              <Edit
                 book={book}
                 onClose={handleCancel}
                 onBookUpdated={handleBookUpdated}
