@@ -1,23 +1,12 @@
-import React from 'react';
-
-function Footer() {
+function FooterComp() {
   return (
-    <footer className="bg-gray-100 py-3 px-4 mt-auto">
-      <div className="container mx-auto">
-        <div className="flex flex-row justify-center items-center overflow-x-auto whitespace-nowrap">
-          <p className="text-gray-600 text-xs sm:text-sm">
-            © 2025 Library Management System. All rights reserved. 
-            <span className="mx-1 sm:mx-2">|</span> 
-            <a href="#" className="hover:text-blue-600 transition-colors">Privacy Policy</a>
-            <span className="mx-1 sm:mx-2">|</span>
-            <a href="#" className="hover:text-blue-600 transition-colors">Terms of Service</a>
-            <span className="mx-1 sm:mx-2">|</span>
-            <a href="#" className="hover:text-blue-600 transition-colors">Contact Us</a>
-          </p>
-        </div>
-      </div>
+    <footer className="flex w-full gap-2 justify-center text-sm text-gray-600 font-normal bg-gray-100 py-3">
+      <p>© 2025 Library Management System. All rights reserved.</p> |
+      <a className="hover:text-blue-600"> Privacy Policy </a> |
+      <a className="hover:text-blue-600"> Terms of Service </a> |
+      <a className="hover:text-blue-600"> Contact Us</a>
     </footer>
   );
 }
 
-export default Footer;
+export default FooterComp;
